@@ -178,4 +178,10 @@
     }
 
     function save() { localStorage.setItem('bs_fin_v5', JSON.stringify(items)); refresh(); }
-    function clearAll() { if(confirm("למחוק הכל
+    function clearAll() { if(confirm("למחוק הכל?")) { items = []; save(); } }
+
+    loadSub();
+    refresh();
+</script>
+</body>
+</html>
