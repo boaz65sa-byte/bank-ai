@@ -2,246 +2,220 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BS Finance OS - בועז סעדה פתרונות יצירתיים</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BS Finance Mobile</title>
     <style>
         :root {
-            --primary: #10b981; --danger: #ef4444; --accent: #6366f1;
-            --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-dim: #94a3b8;
+            --primary: #10b981; --danger: #f43f5e; --bg: #0b0f19;
+            --card: #1c2237; --text: #ffffff; --text-dim: #94a3b8;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* Layout */
-        .app { max-width: 1200px; margin: auto; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #334155; margin-bottom: 30px; }
-        .logo-box { display: flex; align-items: center; gap: 15px; }
-        .bs-icon { background: var(--primary); color: #000; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-weight: 900; font-size: 1.2rem; }
+        /* App Header */
+        header { padding: 20px; background: linear-gradient(to bottom, #1c2237, var(--bg)); text-align: right; }
+        .user-greet { font-size: 0.9rem; color: var(--text-dim); }
+        .brand { font-size: 1.4rem; font-weight: 800; color: var(--primary); margin: 0; }
 
-        /* Dashboard */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stat-card h4 { margin: 0; color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; }
-        .stat-card .val { font-size: 1.5rem; font-weight: bold; margin-top: 10px; display: block; }
+        /* Summary Card */
+        .balance-card { background: linear-gradient(135deg, #2563eb, #6366f1); margin: 0 20px; padding: 25px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .balance-label { font-size: 0.8rem; opacity: 0.8; }
+        .balance-val { font-size: 2.2rem; font-weight: 800; margin: 5px 0; }
 
-        /* Forecast Bar */
-        .forecast-section { background: rgba(99, 102, 241, 0.1); padding: 20px; border-radius: 20px; border: 1px solid var(--accent); margin-bottom: 30px; }
-        .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .f-item { background: var(--bg); padding: 15px; border-radius: 12px; text-align: center; }
+        /* Stats Grid */
+        .quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 20px; }
+        .stat-box { background: var(--card); padding: 15px; border-radius: 18px; display: flex; align-items: center; gap: 10px; }
+        .icon-circle { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
 
-        /* Main Table */
-        .table-container { background: var(--card); border-radius: 20px; padding: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th { color: var(--text-dim); padding: 15px; border-bottom: 1px solid #334155; font-size: 0.85rem; }
-        td { padding: 15px; border-bottom: 1px solid #334155; font-size: 0.9rem; }
-        .type-tag { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; }
+        /* Tabs Section */
+        .view-section { display: none; padding: 0 20px; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Float Button & Modal */
-        .fab { position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); border: none; transition: 0.3s; z-index: 100; }
-        .fab:hover { transform: scale(1.1) rotate(90deg); }
+        /* Transaction List */
+        .list-title { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+        .tx-item { background: var(--card); padding: 15px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .tx-info h4 { margin: 0; font-size: 1rem; }
+        .tx-info small { color: var(--text-dim); font-size: 0.75rem; }
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card); width: 90%; max-width: 500px; padding: 30px; border-radius: 25px; border: 1px solid var(--primary); }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { display: block; margin-top: 10px; font-size: 0.8rem; color: var(--text-dim); }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; background: var(--bg); border: 1px solid #334155; color: #fff; border-radius: 10px; box-sizing: border-box; }
-        .btn-submit { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        /* Forecast */
+        .forecast-card { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--primary); padding: 15px; border-radius: 18px; margin-bottom: 10px; text-align: center; }
 
-        .btn-del { color: var(--danger); cursor: pointer; background: none; border: none; font-size: 1.1rem; }
+        /* Bottom Nav */
+        nav { position: fixed; bottom: 0; width: 100%; background: #161b2c; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #2d3748; z-index: 1000; }
+        .nav-item { color: var(--text-dim); text-decoration: none; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .add-btn { background: var(--primary); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #000; margin-top: -40px; border: 5px solid var(--bg); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; align-items: flex-end; }
+        .modal-content { background: var(--card); width: 100%; border-radius: 30px 30px 0 0; padding: 30px 20px; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #0b0f19; border: 1px solid #2d3748; color: white; border-radius: 12px; font-size: 1rem; }
+        .submit-btn { background: var(--primary); color: #000; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 1rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <header>
-        <div class="logo-box">
-            <div class="bs-icon">BS</div>
-            <div>
-                <h2 style="margin:0;">מערכת פיננסית חכמה</h2>
-                <small style="color:var(--text-dim)">בועז סעדה פתרונות יצירתיים</small>
-            </div>
-        </div>
-        <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:var(--text-dim); cursor:pointer;">איפוס הכל</button>
-    </header>
+<header>
+    <div class="user-greet">שלום, בועז סעדה 👋</div>
+    <h1 class="brand">BS Finance Pro</h1>
+</header>
 
-    <div class="dashboard">
-        <div class="stat-card"><h4>הכנסה חודשית</h4><span class="val" id="totalInc" style="color:var(--primary)">₪0</span></div>
-        <div class="stat-card"><h4>הוצאות והחזרים</h4><span class="val" id="totalExp" style="color:var(--danger)">₪0</span></div>
-        <div class="stat-card"><h4>יתרה נוכחית</h4><span class="val" id="currentBal">₪0</span></div>
+<div class="balance-card">
+    <div class="balance-label">יתרה פנויה לשימוש</div>
+    <div class="balance-val" id="totalBalance">₪0</div>
+    <div id="forecastBrief" style="font-size: 0.8rem; opacity: 0.9;"></div>
+</div>
+
+<div class="quick-stats">
+    <div class="stat-box">
+        <div class="icon-circle" style="background: rgba(16, 185, 129, 0.2); color: var(--primary);">↓</div>
+        <div><small style="color:var(--text-dim)">הכנסות</small><br><strong id="incStat" style="color:var(--primary)">₪0</strong></div>
     </div>
-
-    <div class="forecast-section">
-        <h3 style="margin:0;">🔮 מבט לעתיד (תחזית תזרים 3 חודשים)</h3>
-        <div class="forecast-grid" id="forecastGrid"></div>
-    </div>
-
-    <div class="table-container">
-        <h3>📜 יומן תנועות ועריכה</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>תאריך</th>
-                    <th>תיאור</th>
-                    <th>קטגוריה</th>
-                    <th>אמצעי תשלום</th>
-                    <th>סכום</th>
-                    <th>פעולות</th>
-                </tr>
-            </thead>
-            <tbody id="txBody"></tbody>
-        </table>
+    <div class="stat-box">
+        <div class="icon-circle" style="background: rgba(244, 63, 94, 0.2); color: var(--danger);">↑</div>
+        <div><small style="color:var(--text-dim)">הוצאות</small><br><strong id="expStat" style="color:var(--danger)">₪0</strong></div>
     </div>
 </div>
 
-<button class="fab" onclick="toggleModal(true)">+</button>
+<div id="homeView" class="view-section active">
+    <div class="list-title">
+        <h3>תנועות אחרונות</h3>
+        <small style="color:var(--primary)" onclick="switchTab('tx')">ראה הכל</small>
+    </div>
+    <div id="recentList"></div>
+</div>
 
-<div class="modal" id="txModal">
+<div id="txView" class="view-section">
+    <h3>היסטוריית תנועות מלאה</h3>
+    <div id="fullList"></div>
+</div>
+
+<div id="forecastView" class="view-section">
+    <h3>תחזית תזרים 3 חודשים</h3>
+    <div id="forecastFull"></div>
+    <div style="background: var(--card); padding: 15px; border-radius: 18px; margin-top: 20px;">
+        <p style="font-size: 0.8rem; color: var(--text-dim);">* התחזית מבוססת על הכנסות והוצאות שהגדרת כ"קבועות" (כמו משכנתא, הלוואות ומשכורת).</p>
+    </div>
+</div>
+
+<div class="modal" id="addModal">
     <div class="modal-content">
-        <h2 style="margin-top:0; color:var(--primary);">הוספת תנועה חדשה</h2>
-        <div class="form-grid">
-            <div style="grid-column: span 2;">
-                <label>תיאור הפעולה:</label>
-                <input type="text" id="txDesc" placeholder="למשל: משכורת, סופר, הלוואת רכב">
-            </div>
-            <div>
-                <label>סכום (₪):</label>
-                <input type="number" id="txAmount" placeholder="0.00">
-            </div>
-            <div>
-                <label>סוג:</label>
-                <select id="txType" onchange="updateSubOptions()">
-                    <option value="income">הכנסה ➕</option>
-                    <option value="expense">הוצאה 🔻</option>
-                </select>
-            </div>
-            <div>
-                <label>קטגוריה:</label>
-                <select id="txCat"></select>
-            </div>
-            <div>
-                <label>אמצעי תשלום:</label>
-                <select id="txMethod">
-                    <option value="עו״ש">חשבון עו״ש</option>
-                    <option value="אשראי 1">אשראי (ראשי)</option>
-                    <option value="אשראי 2">אשראי (נוסף)</option>
-                    <option value="מזומן">מזומן</option>
-                </select>
-            </div>
-            <div>
-                <label>תדירות:</label>
-                <select id="txFreq">
-                    <option value="once">חד-פעמי</option>
-                    <option value="monthly">קבוע (כל חודש)</option>
-                </select>
-            </div>
-            <div>
-                <label>תאריך:</label>
-                <input type="date" id="txDate">
-            </div>
-        </div>
-        <button class="btn-submit" onclick="saveTransaction()">שמור נתונים למערכת ✨</button>
-        <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--text-dim); width:100%; margin-top:10px; cursor:pointer;">ביטול</button>
+        <h2 style="margin:0 0 20px 0; text-align:center;">הוספת פעולה</h2>
+        <input type="text" id="mDesc" placeholder="תיאור (למשל: סופר, הלוואת רכב)">
+        <input type="number" id="mSum" placeholder="סכום ב-₪">
+        
+        <select id="mType">
+            <option value="income">הכנסה 💰</option>
+            <option value="expense">הוצאה 💸</option>
+        </select>
+        
+        <select id="mFreq">
+            <option value="once">חד-פעמי החודש</option>
+            <option value="fixed">הוצאה/הכנסה קבועה (כל חודש)</option>
+        </select>
+
+        <button class="submit-btn" onclick="saveData()">שמור פעולה ✨</button>
+        <button onclick="toggleModal(false)" style="background:none; border:none; color:var(--text-dim); width:100%; margin-top:15px;">סגור</button>
     </div>
 </div>
+
+<nav>
+    <div class="nav-item active" onclick="switchTab('home')" id="tab-home">
+        <span>🏠</span><span>בית</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tx')" id="tab-tx">
+        <span>📋</span><span>תנועות</span>
+    </div>
+    <div class="add-btn" onclick="toggleModal(true)">+</div>
+    <div class="nav-item" onclick="switchTab('forecast')" id="tab-forecast">
+        <span>🔮</span><span>תחזית</span>
+    </div>
+    <div class="nav-item" onclick="if(confirm('לאפס נתונים?')) {localStorage.clear(); location.reload();}">
+        <span>⚙️</span><span>איפוס</span>
+    </div>
+</nav>
 
 <script>
-    const subCats = {
-        income: ["משכורת", "הכנסה עסקית", "החזר מס", "השקעות"],
-        expense: ["משכנתא", "ארנונה", "חשמל/מים", "רכב ודלק", "סופר וקניות", "תקשורת", "הלוואות", "בילויים", "שיפוץ/בלט״ם"]
-    };
-
-    let transactions = JSON.parse(localStorage.getItem('bs_finance_v7') || '[]');
+    let db = JSON.parse(localStorage.getItem('bs_mobile_v8') || '[]');
 
     function toggleModal(show) {
-        document.getElementById('txModal').style.display = show ? 'flex' : 'none';
-        if(show) {
-            document.getElementById('txDate').valueAsDate = new Date();
-            updateSubOptions();
-        }
+        document.getElementById('addModal').style.display = show ? 'flex' : 'none';
     }
 
-    function updateSubOptions() {
-        const type = document.getElementById('txType').value;
-        const catSelect = document.getElementById('txCat');
-        catSelect.innerHTML = subCats[type].map(c => `<option value="${c}">${c}</option>`).join('');
+    function switchTab(tab) {
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        document.getElementById(tab + 'View').classList.add('active');
+        document.getElementById('tab-' + tab).classList.add('active');
+        render();
     }
 
-    function saveTransaction() {
-        const data = {
-            id: Date.now(),
-            desc: document.getElementById('txDesc').value,
-            amount: parseFloat(document.getElementById('txAmount').value),
-            type: document.getElementById('txType').value,
-            cat: document.getElementById('txCat').value,
-            method: document.getElementById('txMethod').value,
-            freq: document.getElementById('txFreq').value,
-            date: document.getElementById('txDate').value
-        };
+    function saveData() {
+        const desc = document.getElementById('mDesc').value;
+        const val = parseFloat(document.getElementById('mSum').value);
+        const type = document.getElementById('mType').value;
+        const freq = document.getElementById('mFreq').value;
 
-        if(!data.desc || !data.amount) return alert("מלא תיאור וסכום!");
+        if(!desc || !val) return alert("מלא תיאור וסכום");
 
-        transactions.unshift(data);
-        localStorage.setItem('bs_finance_v7', JSON.stringify(transactions));
+        db.unshift({ desc, val, type, freq, date: new Date().toLocaleDateString('he-IL') });
+        localStorage.setItem('bs_mobile_v8', JSON.stringify(db));
+        
+        document.getElementById('mDesc').value = '';
+        document.getElementById('mSum').value = '';
         toggleModal(false);
         render();
     }
 
-    function deleteTx(id) {
-        if(!confirm("למחוק את התנועה?")) return;
-        transactions = transactions.filter(t => t.id !== id);
-        localStorage.setItem('bs_finance_v7', JSON.stringify(transactions));
-        render();
-    }
-
     function render() {
-        const body = document.getElementById('txBody');
-        let incTotal = 0, expTotal = 0, fixedInc = 0, fixedExp = 0;
+        let inc = 0, exp = 0, fInc = 0, fExp = 0;
+        const recent = document.getElementById('recentList');
+        const full = document.getElementById('fullList');
+        const foreFull = document.getElementById('forecastFull');
         
-        body.innerHTML = '';
-        transactions.forEach(t => {
-            const isInc = t.type === 'income';
-            if(isInc) { 
-                incTotal += t.amount; 
-                if(t.freq === 'monthly') fixedInc += t.amount;
-            } else { 
-                expTotal += t.amount; 
-                if(t.freq === 'monthly') fixedExp += t.amount;
-            }
-
-            body.innerHTML += `
-                <tr>
-                    <td>${t.date}</td>
-                    <td><strong>${t.desc}</strong></td>
-                    <td><span class="type-tag" style="background:rgba(255,255,255,0.1)">${t.cat}</span></td>
-                    <td>${t.method}</td>
-                    <td style="color:${isInc ? 'var(--primary)' : 'var(--danger)'}; font-weight:bold;">
-                        ${isInc ? '+' : '-'}${t.amount.toLocaleString()} ₪
-                    </td>
-                    <td><button class="btn-del" onclick="deleteTx(${t.id})">🗑️</button></td>
-                </tr>
-            `;
-        });
-
-        document.getElementById('totalInc').innerText = `₪${incTotal.toLocaleString()}`;
-        document.getElementById('totalExp').innerText = `₪${expTotal.toLocaleString()}`;
-        document.getElementById('currentBal').innerText = `₪${(incTotal - expTotal).toLocaleString()}`;
-
-        // Forecast Logic
-        const grid = document.getElementById('forecastGrid');
-        grid.innerHTML = '';
-        let balance = incTotal - expTotal;
-        const months = ["החודש", "חודש הבא", "בעוד חודשיים"];
+        recent.innerHTML = '';
+        full.innerHTML = '';
         
-        for(let i=0; i<3; i++) {
-            if(i > 0) balance += (fixedInc - fixedExp);
-            const isNeg = balance < 0;
-            grid.innerHTML += `
-                <div class="f-item">
-                    <div style="font-size:0.7rem; color:var(--text-dim)">${months[i]}</div>
-                    <div style="font-weight:bold; color:${isNeg ? 'var(--danger)' : 'var(--primary)'}">
-                        ${balance.toLocaleString()} ₪
+        db.forEach((item, idx) => {
+            const isInc = item.type === 'income';
+            if(isInc) { inc += item.val; if(item.freq==='fixed') fInc += item.val; }
+            else { exp += item.val; if(item.freq==='fixed') fExp += item.val; }
+
+            const html = `
+                <div class="tx-item">
+                    <div class="tx-info">
+                        <h4>${item.desc}</h4>
+                        <small>${item.date} ${item.freq==='fixed' ? '• קבוע' : ''}</small>
+                    </div>
+                    <div style="color:${isInc ? 'var(--primary)' : 'var(--danger)'}; font-weight:bold;">
+                        ${isInc ? '+' : '-'}${item.val.toLocaleString()} ₪
                     </div>
                 </div>
             `;
+            if(idx < 5) recent.innerHTML += html;
+            full.innerHTML += html;
+        });
+
+        document.getElementById('totalBalance').innerText = `₪${(inc - exp).toLocaleString()}`;
+        document.getElementById('incStat').innerText = `₪${inc.toLocaleString()}`;
+        document.getElementById('expStat').innerText = `₪${exp.toLocaleString()}`;
+
+        // Forecast
+        foreFull.innerHTML = '';
+        let balance = inc - exp;
+        for(let i=1; i<=3; i++) {
+            if(i > 1) balance += (fInc - fExp);
+            foreFull.innerHTML += `
+                <div class="forecast-card">
+                    <div style="font-size:0.8rem; opacity:0.7;">יתרה צפויה בעוד ${i} חודשים</div>
+                    <div style="font-size:1.5rem; font-weight:800; color:${balance < 0 ? 'var(--danger)' : 'var(--primary)'}">₪${balance.toLocaleString()}</div>
+                </div>
+            `;
+            if(i === 1) document.getElementById('forecastBrief').innerText = `תחזית חודש הבא: ₪${balance.toLocaleString()}`;
         }
     }
 
